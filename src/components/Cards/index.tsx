@@ -17,6 +17,27 @@ interface UserCardProps {
 }
 
 const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => {
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+        return `${day < 10 ? "0" + day : day}/${
+            month < 10 ? "0" + month : month
+        }/${year}`;
+    };
+
+    const mapGenderToPortuguese = (gender: string) => {
+        switch (gender) {
+            case "male":
+                return "Masculino";
+            case "female":
+                return "Feminino";
+            default:
+                return gender;
+        }
+    };
+
     return (
         <TouchableOpacity
             style={styles.card}
@@ -33,7 +54,14 @@ const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => {
                 <Text style={styles.name}>
                     {`${user.name.title} ${user.name.first} ${user.name.last}`}
                 </Text>
-                <Text style={styles.email}>{user.email}</Text>
+                <View style={styles.detailContainer}>
+                    <Text style={styles.detail}>
+                        {mapGenderToPortuguese(user.gender)}
+                    </Text>
+                    <Text style={styles.detail}>
+                        {formatDate(user.dob.date)}
+                    </Text>
+                </View>
             </View>
         </TouchableOpacity>
     );
@@ -76,10 +104,14 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#333",
     },
-    email: {
+    detailContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 4,
+    },
+    detail: {
         fontSize: 14,
         color: "#666",
-        marginTop: 4,
     },
 });
 

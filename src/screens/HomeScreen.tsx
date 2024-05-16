@@ -1,4 +1,3 @@
-// Importe os componentes adicionais necessários
 import React, { useState, useEffect } from "react";
 import {
     View,
@@ -8,6 +7,7 @@ import {
     Pressable,
     ActivityIndicator,
     FlatList,
+    TouchableOpacity,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -16,6 +16,7 @@ import { User } from "../types/userTypes";
 import fetchUsers from "../services/UserService";
 import UserCard from "../components/Cards";
 import StudentDetailModal from "../components/Modal";
+import { AntDesign } from "@expo/vector-icons";
 
 const HomeScreen = () => {
     const [search, setSearch] = useState("");
@@ -158,14 +159,26 @@ const HomeScreen = () => {
 
     return (
         <View style={styles.container}>
-            <View>
-                <TextInput
-                    style={styles.searchBar}
-                    placeholder="Buscar..."
-                    value={search}
-                    onChangeText={setSearch}
-                    autoCapitalize="none"
-                />
+            <View style={styles.headerContainer}>
+                <Text style={styles.headerText}>Innovatech</Text>
+                <View style={styles.searchContainer}>
+                    <TextInput
+                        style={styles.searchBar}
+                        placeholder="Buscar..."
+                        value={search}
+                        onChangeText={setSearch}
+                        autoCapitalize="none"
+                    />
+                    <TouchableOpacity
+                        style={styles.filterIconContainer}
+                        onPress={() => {
+                            const filtered = filterUsers(users);
+                            setFilteredUsers(filtered);
+                        }}
+                    >
+                        <AntDesign name="filter" size={24} color="white" />
+                    </TouchableOpacity>
+                </View>
                 <Picker
                     selectedValue={genderFilter}
                     onValueChange={(itemValue) => setGenderFilter(itemValue)}
@@ -184,10 +197,11 @@ const HomeScreen = () => {
                 keyExtractor={(item) => item.login.uuid}
                 onEndReached={handleEndReached}
                 onEndReachedThreshold={0.5}
-                ListFooterComponent={renderFooter} // Renderiza o componente de rodapé dinâmico
+                ListFooterComponent={renderFooter}
                 contentContainerStyle={styles.flatListContent}
             />
-            <View style={styles.footer}>{/* Conteúdo do footer */}</View>
+
+            <View style={styles.footer}>{/*  */}</View>
 
             {selectedUser && (
                 <StudentDetailModal
@@ -204,17 +218,68 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#f5f5f5",
+        padding: 10,
+    },
+    headerText: {
+        marginTop: 40,
+        marginBottom: 10,
+        fontSize: 24,
+        fontWeight: "bold",
+        color: "#6b64a3",
         paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 10,
+    },
+    headerBackground: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        borderRadius: 10,
+    },
+    headerContainer: {
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 10,
+        backgroundColor: "",
+    },
+    searchContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    searchBar: {
+        flex: 1,
+        marginLeft: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        backgroundColor: "#fff",
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "#ccddee",
+        fontSize: 16,
+        marginRight: 10,
+    },
+    filterIconContainer: {
+        marginRight: 10,
+        padding: 5,
+        borderRadius: 10,
+        backgroundColor: "#007bff",
+    },
+    picker: {
+        width: "100%",
+        marginBottom: 10,
+        marginTop: -50,
     },
     flatListContent: {
-        paddingBottom: 10,
+        flexGrow: 1,
     },
     footer: {
         alignItems: "center",
         justifyContent: "center",
-        marginVertical: 10,
+        marginVertical: 3,
         backgroundColor: "#ffffff",
-        height: 100,
+        height: 30,
     },
     loadMoreContainer: {
         flexDirection: "row",
@@ -227,22 +292,8 @@ const styles = StyleSheet.create({
         color: "#007bff",
         fontSize: 16,
     },
-    picker: {
-        width: "40%",
-        alignSelf: "center",
-    },
     pickerItem: {
         textAlign: "center",
-    },
-    searchBar: {
-        marginVertical: 10,
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        backgroundColor: "#fff",
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: "#ccddee",
-        fontSize: 16,
     },
     loading: {
         flex: 1,

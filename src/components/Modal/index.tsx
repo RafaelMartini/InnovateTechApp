@@ -1,4 +1,3 @@
-// components/StudentDetailModal.js
 import React from "react";
 import {
     Modal,
@@ -10,73 +9,119 @@ import {
 } from "react-native";
 
 const StudentDetailModal = ({ visible, onClose, student }) => {
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+        return `${day < 10 ? "0" + day : day}/${
+            month < 10 ? "0" + month : month
+        }/${year}`;
+    };
+
+    const mapGenderToPortuguese = (gender) => {
+        switch (gender) {
+            case "male":
+                return "Masculino";
+            case "female":
+                return "Feminino";
+            default:
+                return gender;
+        }
+    };
+
     return (
         <Modal
             animationType="slide"
-            transparent={false}
+            transparent={true}
             visible={visible}
             onRequestClose={onClose}
         >
-            <View style={styles.container}>
-                <Image
-                    source={{ uri: student.picture.large }}
-                    style={styles.image}
-                />
-                <Text
-                    style={styles.name}
-                >{`${student.name.title} ${student.name.first} ${student.name.last}`}</Text>
-                <Text style={styles.detail}>{`Email: ${student.email}`}</Text>
-                <Text style={styles.detail}>{`Gender: ${student.gender}`}</Text>
-                <Text style={styles.detail}>{`DOB: ${new Date(
-                    student.dob.date
-                ).toLocaleDateString()}`}</Text>
-                <Text style={styles.detail}>{`Phone: ${student.phone}`}</Text>
-                <Text
-                    style={styles.detail}
-                >{`Nationality: ${student.nat}`}</Text>
-                <Text
-                    style={styles.detail}
-                >{`Address: ${student.location.street.number} ${student.location.street.name}, ${student.location.city}, ${student.location.state}, ${student.location.country}`}</Text>
-                <Text
-                    style={styles.detail}
-                >{`ID: ${student.id.name} ${student.id.value}`}</Text>
-                <TouchableOpacity onPress={onClose} style={styles.button}>
-                    <Text style={styles.buttonText}>Close</Text>
-                </TouchableOpacity>
+            <View style={styles.modalBackground}>
+                <View style={styles.modalContainer}>
+                    <Image
+                        source={{ uri: student.picture.large }}
+                        style={styles.image}
+                    />
+                    <Text
+                        style={styles.name}
+                    >{`${student.name.title} ${student.name.first} ${student.name.last}`}</Text>
+                    <View style={styles.detailContainer}>
+                        <Text
+                            style={styles.detail}
+                        >{`Email: ${student.email}`}</Text>
+                        <Text
+                            style={styles.detail}
+                        >{`Gênero: ${mapGenderToPortuguese(
+                            student.gender
+                        )}`}</Text>
+                        <Text
+                            style={styles.detail}
+                        >{`Data de Nascimento: ${formatDate(
+                            student.dob.date
+                        )}`}</Text>
+                        <Text
+                            style={styles.detail}
+                        >{`Telefone: ${student.phone}`}</Text>
+                        <Text
+                            style={styles.detail}
+                        >{`Nacionalidade: ${student.nat}`}</Text>
+                        <Text
+                            style={styles.detail}
+                        >{`Endereço: ${student.location.street.number} ${student.location.street.name}, ${student.location.city}, ${student.location.state}, ${student.location.country}`}</Text>
+                        <Text
+                            style={styles.detail}
+                        >{`ID: ${student.id.name} ${student.id.value}`}</Text>
+                    </View>
+                    <TouchableOpacity onPress={onClose} style={styles.button}>
+                        <Text style={styles.buttonText}>Fechar</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </Modal>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        marginTop: 22,
-        padding: 20,
+    modalBackground: {
         flex: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.4)",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    modalContainer: {
+        backgroundColor: "#fff",
+        borderRadius: 10,
+        padding: 20,
+        width: "80%",
         alignItems: "center",
     },
     image: {
-        width: 200,
-        height: 200,
-        borderRadius: 100,
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        marginBottom: 10,
     },
     name: {
         fontSize: 20,
         fontWeight: "bold",
-        marginTop: 10,
+        marginBottom: 10,
+    },
+    detailContainer: {
+        marginBottom: 10,
     },
     detail: {
         fontSize: 16,
-        marginTop: 5,
+        marginBottom: 5,
     },
     button: {
-        marginTop: 20,
-        backgroundColor: "blue",
-        padding: 10,
+        backgroundColor: "#007bff",
+        paddingVertical: 10,
+        paddingHorizontal: 20,
         borderRadius: 5,
     },
     buttonText: {
-        color: "white",
+        color: "#fff",
         fontSize: 16,
     },
 });
