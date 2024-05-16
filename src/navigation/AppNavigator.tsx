@@ -2,27 +2,21 @@ import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import HomeScreen from "../screens/HomeScreen";
-import DetailsScreen from "../screens/DetailsScreen";
 
 const Stack = createStackNavigator();
 
-function AppNavigator() {
+const AppNavigator: React.FC = () => {
     return (
         <NavigationContainer>
             <Stack.Navigator initialRouteName="Home">
                 <Stack.Screen
                     name="Home"
                     component={HomeScreen}
-                    options={{ title: "Home" }}
-                />
-                <Stack.Screen
-                    name="Details"
-                    component={DetailsScreen}
-                    options={{ title: "Details" }}
+                    options={{ headerShown: false }}
                 />
             </Stack.Navigator>
         </NavigationContainer>
     );
-}
+};
 
 export default AppNavigator;

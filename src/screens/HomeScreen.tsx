@@ -1,21 +1,21 @@
+// Importe os componentes adicionais necessários
 import React, { useState, useEffect } from "react";
 import {
     View,
     TextInput,
-    ScrollView,
     Text,
     StyleSheet,
-    TouchableOpacity,
+    Pressable,
     ActivityIndicator,
-    Animated,
+    FlatList,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useQuery } from "@tanstack/react-query";
 import { User } from "../types/userTypes";
 import fetchUsers from "../services/UserService";
 import UserCard from "../components/Cards";
 import StudentDetailModal from "../components/Modal";
-import { SafeAreaView } from "react-native-safe-area-context";
-import DraggableScrollView from "../components/ScrollTouch/DraggableScrollView";
 
 const HomeScreen = () => {
     const [search, setSearch] = useState("");
@@ -24,7 +24,8 @@ const HomeScreen = () => {
     const [loadingMore, setLoadingMore] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
-    const scrollY = new Animated.Value(0);
+    const [reachedEnd, setReachedEnd] = useState(false);
+    const [genderFilter, setGenderFilter] = useState<string | null>(null);
 
     const {
         data: initialUsers,
@@ -39,25 +40,54 @@ const HomeScreen = () => {
     useEffect(() => {
         if (initialUsers) {
             setUsers(initialUsers);
-            setFilteredUsers(initialUsers.slice(0, 20)); // Limita a exibição inicial a 20 usuários
+            AsyncStorage.setItem("initialUsers", JSON.stringify(initialUsers));
         }
     }, [initialUsers]);
 
     useEffect(() => {
-        if (!search) {
-            setFilteredUsers(users.slice(0, 20)); // Mostra apenas os primeiros 20 usuários
-            return;
+        const fetchCachedData = async () => {
+            try {
+                const cachedData = await AsyncStorage.getItem("initialUsers");
+                if (cachedData) {
+                    setUsers(JSON.parse(cachedData));
+                }
+            } catch (error) {
+                console.error("Error fetching cached users:", error);
+            }
+        };
+
+        fetchCachedData();
+    }, []);
+
+    useEffect(() => {
+        const filtered = filterUsers(users);
+        setFilteredUsers(filtered);
+    }, [users, genderFilter, search]);
+
+    const filterUsers = (usersToFilter: User[]) => {
+        let filtered = usersToFilter;
+
+        if (genderFilter && genderFilter !== "Todos") {
+            filtered = filtered.filter((user) => user.gender === genderFilter);
         }
 
-        const filtered = users.filter((user) =>
-            `${user.name.title} ${user.name.first} ${user.name.last}`
-                .toLowerCase()
-                .includes(search.toLowerCase())
-        );
-        setFilteredUsers(filtered.slice(0, 20)); // Mostra apenas os primeiros 20 usuários
-    }, [search, users]);
+        if (search) {
+            const searchTerm = search.toLowerCase();
+            filtered = filtered.filter((user) =>
+                `${user.name.title} ${user.name.first} ${user.name.last}`
+                    .toLowerCase()
+                    .includes(searchTerm)
+            );
+        }
 
-    const handlePress = (user) => {
+        if (genderFilter === "all") {
+            return usersToFilter;
+        }
+
+        return filtered;
+    };
+
+    const handlePress = (user: User) => {
         setSelectedUser(user);
     };
 
@@ -67,19 +97,47 @@ const HomeScreen = () => {
 
     const fetchMoreUsers = async () => {
         try {
-            setLoadingMore(true);
-            const nextPage = page + 1;
-            const response = await fetchUsers();
-            setUsers((prevUsers) => [...prevUsers, ...response]);
-            setFilteredUsers((prevUsers) => [
-                ...prevUsers,
-                ...response.slice(0, 20),
-            ]);
-            setPage(nextPage);
+            if (!loadingMore && !reachedEnd) {
+                setLoadingMore(true);
+                const nextPage = page + 1;
+                console.log("Fetching more users. Page:", nextPage);
+                const response = await fetchUsers();
+                if (response.length > 0) {
+                    setUsers((prevUsers) => [...prevUsers, ...response]);
+                    setPage(nextPage);
+                } else {
+                    setReachedEnd(true);
+                }
+            }
         } catch (error) {
             console.error("Error fetching more users:", error);
         } finally {
             setLoadingMore(false);
+        }
+    };
+
+    const handleEndReached = () => {
+        if (!loadingMore && !reachedEnd) {
+            fetchMoreUsers();
+        }
+    };
+
+    const renderItem = ({ item }: { item: User }) => (
+        <Pressable key={item.login.uuid} onPress={() => handlePress(item)}>
+            <UserCard user={item} onPress={() => handlePress(item)} />
+        </Pressable>
+    );
+
+    const renderFooter = () => {
+        if (loadingMore) {
+            return (
+                <View style={styles.loadMoreContainer}>
+                    <ActivityIndicator size="small" color="#007bff" />
+                    <Text style={styles.loadMoreText}>Carregar mais...</Text>
+                </View>
+            );
+        } else {
+            return null;
         }
     };
 
@@ -99,63 +157,46 @@ const HomeScreen = () => {
         );
 
     return (
-        <DraggableScrollView>
-            <View style={{ height: 1000 }}>
-                <Animated.View
-                    style={[
-                        styles.container,
-                        {
-                            transform: [
-                                {
-                                    translateY: Animated.multiply(scrollY, -1),
-                                },
-                            ],
-                        },
-                    ]}
+        <View style={styles.container}>
+            <View>
+                <TextInput
+                    style={styles.searchBar}
+                    placeholder="Buscar..."
+                    value={search}
+                    onChangeText={setSearch}
+                    autoCapitalize="none"
+                />
+                <Picker
+                    selectedValue={genderFilter}
+                    onValueChange={(itemValue) => setGenderFilter(itemValue)}
+                    style={styles.picker}
+                    itemStyle={styles.pickerItem}
                 >
-                    <TextInput
-                        style={styles.searchBar}
-                        placeholder="Buscar..."
-                        value={search}
-                        onChangeText={setSearch}
-                        autoCapitalize="none"
-                    />
-                    <View style={styles.flatListContainer}>
-                        {filteredUsers.map((user, index) => (
-                            <TouchableOpacity
-                                key={user.login.uuid}
-                                activeOpacity={0.7}
-                                onPress={() => handlePress(user)}
-                            >
-                                <UserCard
-                                    user={user}
-                                    onPress={() => handlePress(user)}
-                                />
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                    <View style={styles.loadMoreContainer}>
-                        {loadingMore ? (
-                            <ActivityIndicator size="small" color="#007bff" />
-                        ) : (
-                            <TouchableOpacity onPress={fetchMoreUsers}>
-                                <Text style={styles.loadMoreText}>
-                                    Buscar mais...
-                                </Text>
-                            </TouchableOpacity>
-                        )}
-                    </View>
-
-                    {selectedUser && (
-                        <StudentDetailModal
-                            visible={true}
-                            onClose={closeModal}
-                            student={selectedUser}
-                        />
-                    )}
-                </Animated.View>
+                    <Picker.Item label="Todos" value={"all"} />
+                    <Picker.Item label="Masculino" value="male" />
+                    <Picker.Item label="Feminino" value="female" />
+                </Picker>
             </View>
-        </DraggableScrollView>
+
+            <FlatList
+                data={filteredUsers}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.login.uuid}
+                onEndReached={handleEndReached}
+                onEndReachedThreshold={0.5}
+                ListFooterComponent={renderFooter} // Renderiza o componente de rodapé dinâmico
+                contentContainerStyle={styles.flatListContent}
+            />
+            <View style={styles.footer}>{/* Conteúdo do footer */}</View>
+
+            {selectedUser && (
+                <StudentDetailModal
+                    visible={true}
+                    onClose={closeModal}
+                    student={selectedUser}
+                />
+            )}
+        </View>
     );
 };
 
@@ -165,6 +206,34 @@ const styles = StyleSheet.create({
         backgroundColor: "#f5f5f5",
         paddingHorizontal: 20,
     },
+    flatListContent: {
+        paddingBottom: 10,
+    },
+    footer: {
+        alignItems: "center",
+        justifyContent: "center",
+        marginVertical: 10,
+        backgroundColor: "#ffffff",
+        height: 100,
+    },
+    loadMoreContainer: {
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        paddingVertical: 10,
+    },
+    loadMoreText: {
+        marginLeft: 10,
+        color: "#007bff",
+        fontSize: 16,
+    },
+    picker: {
+        width: "40%",
+        alignSelf: "center",
+    },
+    pickerItem: {
+        textAlign: "center",
+    },
     searchBar: {
         marginVertical: 10,
         paddingVertical: 10,
@@ -173,20 +242,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderWidth: 1,
         borderColor: "#ccddee",
-        fontSize: 16,
-    },
-    scrollView: {
-        flex: 1,
-    },
-    flatListContainer: {
-        marginTop: 10,
-    },
-    loadMoreContainer: {
-        alignItems: "center",
-        marginVertical: 10,
-    },
-    loadMoreText: {
-        color: "#007bff",
         fontSize: 16,
     },
     loading: {

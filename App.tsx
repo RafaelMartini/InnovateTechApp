@@ -10,7 +10,7 @@ function App() {
         <QueryClientProvider client={queryClient}>
             <Provider store={store}>
                 <AppNavigator />
-            </Provider>{" "}
+            </Provider>
         </QueryClientProvider>
     );
 }
