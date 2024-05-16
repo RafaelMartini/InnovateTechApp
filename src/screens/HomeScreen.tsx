@@ -269,7 +269,6 @@ const styles = StyleSheet.create({
     picker: {
         width: "100%",
         marginBottom: 10,
-        marginTop: -50,
     },
     flatListContent: {
         flexGrow: 1,
