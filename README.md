@@ -50,13 +50,26 @@ O InnovateTechApp é uma aplicação móvel desenvolvida para a InnovateTech que
 
 ## :sparkles: Features
 
-:heavy_check_mark: Feature 1: Tela de Carregamento Inicial: Exibição da logo da InnovateTech enquanto o aplicativo carrega.
-:heavy_check_mark: Feature 2: Listagem Paginada de Alunos: Exibição dos alunos com uma paginação que carrega 20 alunos por vez, com carregamento adicional ao atingir o final da lista.
-:heavy_check_mark: Feature 3: Filtragem de Alunos: Funcionalidade de pesquisa que permite filtrar alunos pelo primeiro ou segundo nome através de uma barra de busca.
-:heavy_check_mark: Feature 4: Visualização Detalhada de Alunos: Ao selecionar um aluno, um modal deve ser aberto mostrando detalhes como imagem, nome completo, email, gênero, data de nascimento, telefone, nacionalidade, endereço e ID.
-:heavy_check_mark: Feature 5: Filtro por Gênero: Um filtro adicional na listagem para selecionar alunos por gênero.
-:heavy_check_mark: Feature 6: Cache de Dados: Após o primeiro carregamento dos dados, armazenar as informações no cache interno do dispositivo para acesso rápido sem necessidade de nova consulta à API em reinicializações subsequentes.
-:heavy_check_mark: Feature 7: Gerenciamento de Estado: Uso do Redux para manejar o estado global da aplicação.
+:heavy_check_mark: **Feature 1: Tela de Carregamento Inicial**  
+Exibição da logo da InnovateTech enquanto o aplicativo carrega.
+
+:heavy_check_mark: **Feature 2: Listagem Paginada de Alunos**  
+Exibição dos alunos com uma paginação que carrega 20 alunos por vez, com carregamento adicional ao atingir o final da lista.
+
+:heavy_check_mark: **Feature 3: Filtragem de Alunos**  
+Funcionalidade de pesquisa que permite filtrar alunos pelo primeiro ou segundo nome através de uma barra de busca.
+
+:heavy_check_mark: **Feature 4: Visualização Detalhada de Alunos**  
+Ao selecionar um aluno, um modal deve ser aberto mostrando detalhes como imagem, nome completo, email, gênero, data de nascimento, telefone, nacionalidade, endereço e ID.
+
+:heavy_check_mark: **Feature 5: Filtro por Gênero**  
+Um filtro adicional na listagem para selecionar alunos por gênero.
+
+:heavy_check_mark: **Feature 6: Cache de Dados**  
+Após o primeiro carregamento dos dados, armazenar as informações no cache interno do dispositivo para acesso rápido sem necessidade de nova consulta à API em reinicializações subsequentes.
+
+:heavy_check_mark: **Feature 7: Gerenciamento de Estado**  
+Uso do Redux para manejar o estado global da aplicação.
 
 ## :rocket: Technologies
 
