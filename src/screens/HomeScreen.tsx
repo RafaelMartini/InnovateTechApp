@@ -17,6 +17,10 @@ import fetchUsers from "../services/UserService";
 import UserCard from "../components/Cards";
 import StudentDetailModal from "../components/Modal";
 import { AntDesign } from "@expo/vector-icons";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../redux/store";
+import { toggleTheme } from "../redux/themeSlice";
+import { Ionicons } from "@expo/vector-icons";
 
 const HomeScreen = () => {
     const [search, setSearch] = useState("");
@@ -27,6 +31,9 @@ const HomeScreen = () => {
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [reachedEnd, setReachedEnd] = useState(false);
     const [genderFilter, setGenderFilter] = useState<string>("all");
+
+    const dispatch = useDispatch();
+    const darkMode = useSelector((state: RootState) => state.theme.darkMode);
 
     const {
         data: initialUsers,
@@ -137,6 +144,10 @@ const HomeScreen = () => {
         }
     };
 
+    const handleToggleTheme = () => {
+        dispatch(toggleTheme()); // Dispara a ação toggleTheme
+    };
+
     if (isLoading)
         return (
             <ActivityIndicator
@@ -153,9 +164,21 @@ const HomeScreen = () => {
         );
 
     return (
-        <View style={styles.container}>
+        <View
+            style={[styles.container, darkMode ? styles.containerDark : null]}
+        >
             <View style={styles.headerContainer}>
                 <Text style={styles.headerText}>Innovatech</Text>
+                <TouchableOpacity
+                    style={styles.toggleThemeButton}
+                    onPress={handleToggleTheme}
+                >
+                    {darkMode ? (
+                        <AntDesign name="bulb1" size={24} color="white" />
+                    ) : (
+                        <AntDesign name="bulb1" size={24} color="black" />
+                    )}
+                </TouchableOpacity>
                 <View style={styles.searchContainer}>
                     <TextInput
                         style={styles.searchBar}
@@ -196,8 +219,6 @@ const HomeScreen = () => {
                 contentContainerStyle={styles.flatListContent}
             />
 
-            <View style={styles.footer}>{/*  */}</View>
-
             {selectedUser && (
                 <StudentDetailModal
                     visible={true}
@@ -215,12 +236,22 @@ const styles = StyleSheet.create({
         backgroundColor: "#f5f5f5",
         padding: 10,
     },
+    containerDark: {
+        backgroundColor: "#1c1c1e",
+    },
+    toggleThemeButton: {
+        position: "absolute",
+        top: 35,
+        right: 0,
+        padding: 10,
+    },
+
     headerText: {
         marginTop: 40,
         marginBottom: 10,
         fontSize: 24,
         fontWeight: "bold",
-        color: "#6b64a3",
+        color: "#FF4500",
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 10,
