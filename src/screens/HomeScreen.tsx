@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     View,
     TextInput,
@@ -29,6 +29,14 @@ const HomeScreen = () => {
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [reachedEnd, setReachedEnd] = useState(false);
     const [genderFilter, setGenderFilter] = useState<string>("all");
+
+    const flatListRef = useRef<FlatList>(null);
+
+    const scrollToTop = () => {
+        if (flatListRef.current) {
+            flatListRef.current.scrollToOffset({ animated: true, offset: 0 });
+        }
+    };
 
     const dispatch = useDispatch();
     const darkMode = useSelector((state: RootState) => state.theme.darkMode);
@@ -215,6 +223,7 @@ const HomeScreen = () => {
             </View>
 
             <FlatList
+                ref={flatListRef}
                 data={filteredUsers}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.login.uuid}
@@ -223,6 +232,9 @@ const HomeScreen = () => {
                 ListFooterComponent={renderFooter}
                 contentContainerStyle={styles.flatListContent}
             />
+            <Pressable style={styles.scrollToTopButton} onPress={scrollToTop}>
+                <AntDesign name="arrowup" size={24} color="white" />
+            </Pressable>
 
             {selectedUser && (
                 <StudentDetailModal
@@ -250,7 +262,17 @@ const styles = StyleSheet.create({
         right: 0,
         padding: 10,
     },
-
+    scrollToTopButton: {
+        position: "absolute",
+        right: 20,
+        bottom: 20,
+        backgroundColor: "#007bff",
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        justifyContent: "center",
+        alignItems: "center",
+    },
     headerText: {
         marginTop: 40,
         marginBottom: 10,
