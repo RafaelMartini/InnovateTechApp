@@ -7,7 +7,6 @@ import {
     Pressable,
     ActivityIndicator,
     FlatList,
-    TouchableOpacity,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -169,7 +168,7 @@ const HomeScreen = () => {
         >
             <View style={styles.headerContainer}>
                 <Text style={styles.headerText}>Innovatech</Text>
-                <TouchableOpacity
+                <Pressable
                     style={styles.toggleThemeButton}
                     onPress={handleToggleTheme}
                 >
@@ -178,7 +177,7 @@ const HomeScreen = () => {
                     ) : (
                         <AntDesign name="bulb1" size={24} color="black" />
                     )}
-                </TouchableOpacity>
+                </Pressable>
                 <View style={styles.searchContainer}>
                     <TextInput
                         style={styles.searchBar}
@@ -187,7 +186,7 @@ const HomeScreen = () => {
                         onChangeText={setSearch}
                         autoCapitalize="none"
                     />
-                    <TouchableOpacity
+                    <Pressable
                         style={styles.filterIconContainer}
                         onPress={() => {
                             const filtered = filterUsers(users);
@@ -195,7 +194,7 @@ const HomeScreen = () => {
                         }}
                     >
                         <AntDesign name="filter" size={24} color="white" />
-                    </TouchableOpacity>
+                    </Pressable>
                 </View>
                 <Picker
                     selectedValue={genderFilter}

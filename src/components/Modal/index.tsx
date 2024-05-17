@@ -1,14 +1,6 @@
 import React from "react";
-import {
-    Modal,
-    View,
-    Text,
-    Image,
-    StyleSheet,
-    TouchableOpacity,
-} from "react-native";
+import { Modal, View, Text, Image, StyleSheet, Pressable } from "react-native";
 import { User } from "../../types/userTypes";
-
 
 interface StudentDetailModalProps {
     visible: boolean;
@@ -16,13 +8,19 @@ interface StudentDetailModalProps {
     student: User;
 }
 
-const StudentDetailModal: React.FC<StudentDetailModalProps> = ({ visible, onClose, student }) => {
+const StudentDetailModal: React.FC<StudentDetailModalProps> = ({
+    visible,
+    onClose,
+    student,
+}) => {
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         const day = date.getDate();
         const month = date.getMonth() + 1;
         const year = date.getFullYear();
-        return `${day < 10 ? "0" + day : day}/${month < 10 ? "0" + month : month}/${year}`;
+        return `${day < 10 ? "0" + day : day}/${
+            month < 10 ? "0" + month : month
+        }/${year}`;
     };
 
     const mapGenderToPortuguese = (gender: string) => {
@@ -49,19 +47,39 @@ const StudentDetailModal: React.FC<StudentDetailModalProps> = ({ visible, onClos
                         source={{ uri: student.picture.large }}
                         style={styles.image}
                     />
-                    <Text style={styles.name}>{`${student.name.title} ${student.name.first} ${student.name.last}`}</Text>
+                    <Text
+                        style={styles.name}
+                    >{`${student.name.title} ${student.name.first} ${student.name.last}`}</Text>
                     <View style={styles.detailContainer}>
-                        <Text style={styles.detail}>{`Email: ${student.email}`}</Text>
-                        <Text style={styles.detail}>{`Gênero: ${mapGenderToPortuguese(student.gender)}`}</Text>
-                        <Text style={styles.detail}>{`Data de Nascimento: ${formatDate(student.dob.date)}`}</Text>
-                        <Text style={styles.detail}>{`Telefone: ${student.phone}`}</Text>
-                        <Text style={styles.detail}>{`Nacionalidade: ${student.nat}`}</Text>
-                        <Text style={styles.detail}>{`Endereço: ${student.location.street.number} ${student.location.street.name}, ${student.location.city}, ${student.location.state}, ${student.location.country}`}</Text>
-                        <Text style={styles.detail}>{`ID: ${student.id.name} ${student.id.value}`}</Text>
+                        <Text
+                            style={styles.detail}
+                        >{`Email: ${student.email}`}</Text>
+                        <Text
+                            style={styles.detail}
+                        >{`Gênero: ${mapGenderToPortuguese(
+                            student.gender
+                        )}`}</Text>
+                        <Text
+                            style={styles.detail}
+                        >{`Data de Nascimento: ${formatDate(
+                            student.dob.date
+                        )}`}</Text>
+                        <Text
+                            style={styles.detail}
+                        >{`Telefone: ${student.phone}`}</Text>
+                        <Text
+                            style={styles.detail}
+                        >{`Nacionalidade: ${student.nat}`}</Text>
+                        <Text
+                            style={styles.detail}
+                        >{`Endereço: ${student.location.street.number} ${student.location.street.name}, ${student.location.city}, ${student.location.state}, ${student.location.country}`}</Text>
+                        <Text
+                            style={styles.detail}
+                        >{`ID: ${student.id.name} ${student.id.value}`}</Text>
                     </View>
-                    <TouchableOpacity onPress={onClose} style={styles.button}>
+                    <Pressable onPress={onClose} style={styles.button}>
                         <Text style={styles.buttonText}>Fechar</Text>
-                    </TouchableOpacity>
+                    </Pressable>
                 </View>
             </View>
         </Modal>
