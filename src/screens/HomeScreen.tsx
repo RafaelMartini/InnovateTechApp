@@ -42,7 +42,6 @@ const HomeScreen = () => {
     };
 
     const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-        // Define um valor mínimo de rolagem antes de mostrar o botão, por exemplo 200 pixels
         const showButton = event.nativeEvent.contentOffset.y > 200;
         setShowScrollToTopButton(showButton);
     };
@@ -210,7 +209,7 @@ const HomeScreen = () => {
                     onValueChange={(itemValue) => setGenderFilter(itemValue)}
                     style={[
                         styles.picker,
-                        { color: darkMode ? "white" : "black" }, // Tentando aplicar a cor de texto aqui
+                        { color: darkMode ? "white" : "black" },
                     ]}
                 >
                     <Picker.Item
@@ -240,8 +239,8 @@ const HomeScreen = () => {
                 onEndReachedThreshold={0}
                 ListFooterComponent={renderFooter}
                 contentContainerStyle={styles.flatListContent}
-                onScroll={handleScroll} // Adicione esta linha
-                scrollEventThrottle={16} // Use esta linha para melhorar a performance
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
             />
             {showScrollToTopButton && (
                 <Pressable
@@ -337,6 +336,7 @@ const styles = StyleSheet.create({
     },
     picker: {
         width: "80%",
+        marginTop: 10,
     },
     flatListContent: {
         flexGrow: 1,
