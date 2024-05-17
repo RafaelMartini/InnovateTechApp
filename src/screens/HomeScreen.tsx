@@ -19,7 +19,6 @@ import { AntDesign } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
 import { toggleTheme } from "../redux/themeSlice";
-import { Ionicons } from "@expo/vector-icons";
 
 const HomeScreen = () => {
     const [search, setSearch] = useState("");
@@ -45,26 +44,19 @@ const HomeScreen = () => {
     });
 
     useEffect(() => {
-        if (initialUsers) {
-            setUsers(initialUsers);
-            AsyncStorage.setItem("initialUsers", JSON.stringify(initialUsers));
-        }
-    }, [initialUsers]);
-
-    useEffect(() => {
-        const fetchCachedData = async () => {
-            try {
-                const cachedData = await AsyncStorage.getItem("initialUsers");
-                if (cachedData) {
-                    setUsers(JSON.parse(cachedData));
+        async function fetchData() {
+            const cachedData = await AsyncStorage.getItem("initialUsers");
+            if (cachedData) {
+                setUsers(JSON.parse(cachedData));
+            } else {
+                if (initialUsers) {
+                    setUsers(initialUsers);
                 }
-            } catch (error) {
-                console.error("Error fetching cached users:", error);
             }
-        };
+        }
 
-        fetchCachedData();
-    }, []);
+        fetchData();
+    }, [initialUsers]);
 
     useEffect(() => {
         const filtered = filterUsers(users);
@@ -144,7 +136,7 @@ const HomeScreen = () => {
     };
 
     const handleToggleTheme = () => {
-        dispatch(toggleTheme()); // Dispara a ação toggleTheme
+        dispatch(toggleTheme());
     };
 
     if (isLoading)
@@ -199,12 +191,26 @@ const HomeScreen = () => {
                 <Picker
                     selectedValue={genderFilter}
                     onValueChange={(itemValue) => setGenderFilter(itemValue)}
-                    style={styles.picker}
-                    itemStyle={styles.pickerItem}
+                    style={[
+                        styles.picker,
+                        { color: darkMode ? "white" : "black" }, // Tentando aplicar a cor de texto aqui
+                    ]}
                 >
-                    <Picker.Item label="Todos" value={"all"} />
-                    <Picker.Item label="Masculino" value="male" />
-                    <Picker.Item label="Feminino" value="female" />
+                    <Picker.Item
+                        label="Todos"
+                        value={"all"}
+                        color={darkMode ? "white" : "black"}
+                    />
+                    <Picker.Item
+                        label="Masculino"
+                        value="male"
+                        color={darkMode ? "white" : "black"}
+                    />
+                    <Picker.Item
+                        label="Feminino"
+                        value="female"
+                        color={darkMode ? "white" : "black"}
+                    />
                 </Picker>
             </View>
 
@@ -213,7 +219,7 @@ const HomeScreen = () => {
                 renderItem={renderItem}
                 keyExtractor={(item) => item.login.uuid}
                 onEndReached={handleEndReached}
-                onEndReachedThreshold={0.5}
+                onEndReachedThreshold={0}
                 ListFooterComponent={renderFooter}
                 contentContainerStyle={styles.flatListContent}
             />
@@ -292,8 +298,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#007bff",
     },
     picker: {
-        width: "100%",
-        marginBottom: 10,
+        width: "80%",
     },
     flatListContent: {
         flexGrow: 1,
@@ -319,6 +324,7 @@ const styles = StyleSheet.create({
     pickerItem: {
         textAlign: "center",
     },
+
     loading: {
         flex: 1,
         justifyContent: "center",
