@@ -7,6 +7,8 @@ import {
     Pressable,
     ActivityIndicator,
     FlatList,
+    NativeSyntheticEvent,
+    NativeScrollEvent,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -31,11 +33,18 @@ const HomeScreen = () => {
     const [genderFilter, setGenderFilter] = useState<string>("all");
 
     const flatListRef = useRef<FlatList>(null);
+    const [showScrollToTopButton, setShowScrollToTopButton] = useState(false);
 
     const scrollToTop = () => {
         if (flatListRef.current) {
             flatListRef.current.scrollToOffset({ animated: true, offset: 0 });
         }
+    };
+
+    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        // Define um valor mínimo de rolagem antes de mostrar o botão, por exemplo 200 pixels
+        const showButton = event.nativeEvent.contentOffset.y > 200;
+        setShowScrollToTopButton(showButton);
     };
 
     const dispatch = useDispatch();
@@ -231,10 +240,17 @@ const HomeScreen = () => {
                 onEndReachedThreshold={0}
                 ListFooterComponent={renderFooter}
                 contentContainerStyle={styles.flatListContent}
+                onScroll={handleScroll} // Adicione esta linha
+                scrollEventThrottle={16} // Use esta linha para melhorar a performance
             />
-            <Pressable style={styles.scrollToTopButton} onPress={scrollToTop}>
-                <AntDesign name="arrowup" size={24} color="white" />
-            </Pressable>
+            {showScrollToTopButton && (
+                <Pressable
+                    style={styles.scrollToTopButton}
+                    onPress={scrollToTop}
+                >
+                    <AntDesign name="arrowup" size={24} color="white" />
+                </Pressable>
+            )}
 
             {selectedUser && (
                 <StudentDetailModal
