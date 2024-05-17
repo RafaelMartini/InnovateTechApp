@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     View,
     TextInput,
@@ -7,7 +7,8 @@ import {
     Pressable,
     ActivityIndicator,
     FlatList,
-    TouchableOpacity,
+    NativeSyntheticEvent,
+    NativeScrollEvent,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -20,7 +21,6 @@ import { AntDesign } from "@expo/vector-icons";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
 import { toggleTheme } from "../redux/themeSlice";
-import { Ionicons } from "@expo/vector-icons";
 
 const HomeScreen = () => {
     const [search, setSearch] = useState("");
@@ -31,6 +31,21 @@ const HomeScreen = () => {
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [reachedEnd, setReachedEnd] = useState(false);
     const [genderFilter, setGenderFilter] = useState<string>("all");
+
+    const flatListRef = useRef<FlatList>(null);
+    const [showScrollToTopButton, setShowScrollToTopButton] = useState(false);
+
+    const scrollToTop = () => {
+        if (flatListRef.current) {
+            flatListRef.current.scrollToOffset({ animated: true, offset: 0 });
+        }
+    };
+
+    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+        // Define um valor mínimo de rolagem antes de mostrar o botão, por exemplo 200 pixels
+        const showButton = event.nativeEvent.contentOffset.y > 200;
+        setShowScrollToTopButton(showButton);
+    };
 
     const dispatch = useDispatch();
     const darkMode = useSelector((state: RootState) => state.theme.darkMode);
@@ -46,26 +61,19 @@ const HomeScreen = () => {
     });
 
     useEffect(() => {
-        if (initialUsers) {
-            setUsers(initialUsers);
-            AsyncStorage.setItem("initialUsers", JSON.stringify(initialUsers));
-        }
-    }, [initialUsers]);
-
-    useEffect(() => {
-        const fetchCachedData = async () => {
-            try {
-                const cachedData = await AsyncStorage.getItem("initialUsers");
-                if (cachedData) {
-                    setUsers(JSON.parse(cachedData));
+        async function fetchData() {
+            const cachedData = await AsyncStorage.getItem("initialUsers");
+            if (cachedData) {
+                setUsers(JSON.parse(cachedData));
+            } else {
+                if (initialUsers) {
+                    setUsers(initialUsers);
                 }
-            } catch (error) {
-                console.error("Error fetching cached users:", error);
             }
-        };
+        }
 
-        fetchCachedData();
-    }, []);
+        fetchData();
+    }, [initialUsers]);
 
     useEffect(() => {
         const filtered = filterUsers(users);
@@ -145,7 +153,7 @@ const HomeScreen = () => {
     };
 
     const handleToggleTheme = () => {
-        dispatch(toggleTheme()); // Dispara a ação toggleTheme
+        dispatch(toggleTheme());
     };
 
     if (isLoading)
@@ -169,7 +177,7 @@ const HomeScreen = () => {
         >
             <View style={styles.headerContainer}>
                 <Text style={styles.headerText}>Innovatech</Text>
-                <TouchableOpacity
+                <Pressable
                     style={styles.toggleThemeButton}
                     onPress={handleToggleTheme}
                 >
@@ -178,7 +186,7 @@ const HomeScreen = () => {
                     ) : (
                         <AntDesign name="bulb1" size={24} color="black" />
                     )}
-                </TouchableOpacity>
+                </Pressable>
                 <View style={styles.searchContainer}>
                     <TextInput
                         style={styles.searchBar}
@@ -187,7 +195,7 @@ const HomeScreen = () => {
                         onChangeText={setSearch}
                         autoCapitalize="none"
                     />
-                    <TouchableOpacity
+                    <Pressable
                         style={styles.filterIconContainer}
                         onPress={() => {
                             const filtered = filterUsers(users);
@@ -195,29 +203,54 @@ const HomeScreen = () => {
                         }}
                     >
                         <AntDesign name="filter" size={24} color="white" />
-                    </TouchableOpacity>
+                    </Pressable>
                 </View>
                 <Picker
                     selectedValue={genderFilter}
                     onValueChange={(itemValue) => setGenderFilter(itemValue)}
-                    style={styles.picker}
-                    itemStyle={styles.pickerItem}
+                    style={[
+                        styles.picker,
+                        { color: darkMode ? "white" : "black" }, // Tentando aplicar a cor de texto aqui
+                    ]}
                 >
-                    <Picker.Item label="Todos" value={"all"} />
-                    <Picker.Item label="Masculino" value="male" />
-                    <Picker.Item label="Feminino" value="female" />
+                    <Picker.Item
+                        label="Todos"
+                        value={"all"}
+                        color={darkMode ? "white" : "black"}
+                    />
+                    <Picker.Item
+                        label="Masculino"
+                        value="male"
+                        color={darkMode ? "white" : "black"}
+                    />
+                    <Picker.Item
+                        label="Feminino"
+                        value="female"
+                        color={darkMode ? "white" : "black"}
+                    />
                 </Picker>
             </View>
 
             <FlatList
+                ref={flatListRef}
                 data={filteredUsers}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.login.uuid}
                 onEndReached={handleEndReached}
-                onEndReachedThreshold={0.5}
+                onEndReachedThreshold={0}
                 ListFooterComponent={renderFooter}
                 contentContainerStyle={styles.flatListContent}
+                onScroll={handleScroll} // Adicione esta linha
+                scrollEventThrottle={16} // Use esta linha para melhorar a performance
             />
+            {showScrollToTopButton && (
+                <Pressable
+                    style={styles.scrollToTopButton}
+                    onPress={scrollToTop}
+                >
+                    <AntDesign name="arrowup" size={24} color="white" />
+                </Pressable>
+            )}
 
             {selectedUser && (
                 <StudentDetailModal
@@ -245,13 +278,23 @@ const styles = StyleSheet.create({
         right: 0,
         padding: 10,
     },
-
+    scrollToTopButton: {
+        position: "absolute",
+        right: 20,
+        bottom: 20,
+        backgroundColor: "#007bff",
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        justifyContent: "center",
+        alignItems: "center",
+    },
     headerText: {
         marginTop: 40,
         marginBottom: 10,
         fontSize: 24,
         fontWeight: "bold",
-        color: "#FF4500",
+        color: "#4169E1",
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 10,
@@ -293,8 +336,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#007bff",
     },
     picker: {
-        width: "100%",
-        marginBottom: 10,
+        width: "80%",
     },
     flatListContent: {
         flexGrow: 1,
@@ -320,6 +362,7 @@ const styles = StyleSheet.create({
     pickerItem: {
         textAlign: "center",
     },
+
     loading: {
         flex: 1,
         justifyContent: "center",

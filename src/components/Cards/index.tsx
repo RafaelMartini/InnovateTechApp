@@ -2,7 +2,7 @@ import React from "react";
 import {
     View,
     Text,
-    TouchableOpacity,
+    Pressable,
     Image,
     StyleSheet,
     Dimensions,
@@ -39,11 +39,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => {
     };
 
     return (
-        <TouchableOpacity
-            style={styles.card}
-            onPress={onPress}
-            activeOpacity={0.7}
-        >
+        <Pressable style={styles.card} onPress={onPress}>
             <View style={styles.imageContainer}>
                 <Image
                     style={styles.image}
@@ -63,7 +59,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => {
                     </Text>
                 </View>
             </View>
-        </TouchableOpacity>
+        </Pressable>
     );
 };
 
@@ -73,7 +69,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 16,
         alignItems: "center",
-        backgroundColor: "#FFFFF0",
+        backgroundColor: "#D3D3D3",
         marginBottom: 10,
         borderRadius: 10,
         shadowColor: "#000",
