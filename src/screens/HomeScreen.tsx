@@ -26,7 +26,7 @@ const HomeScreen = () => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [reachedEnd, setReachedEnd] = useState(false);
-    const [genderFilter, setGenderFilter] = useState<string | null>(null);
+    const [genderFilter, setGenderFilter] = useState<string>("all");
 
     const {
         data: initialUsers,
@@ -66,23 +66,18 @@ const HomeScreen = () => {
     }, [users, genderFilter, search]);
 
     const filterUsers = (usersToFilter: User[]) => {
-        let filtered = usersToFilter;
-
-        if (genderFilter && genderFilter !== "Todos") {
-            filtered = filtered.filter((user) => user.gender === genderFilter);
-        }
+        let filtered =
+            genderFilter !== "all"
+                ? usersToFilter.filter((user) => user.gender === genderFilter)
+                : usersToFilter;
 
         if (search) {
-            const searchTerm = search.toLowerCase();
+            const searchTerm = search.toLowerCase().trim();
             filtered = filtered.filter((user) =>
                 `${user.name.title} ${user.name.first} ${user.name.last}`
                     .toLowerCase()
                     .includes(searchTerm)
             );
-        }
-
-        if (genderFilter === "all") {
-            return usersToFilter;
         }
 
         return filtered;
