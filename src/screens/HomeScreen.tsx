@@ -201,32 +201,17 @@ const HomeScreen = () => {
                             setFilteredUsers(filtered);
                         }}
                     >
-                        <AntDesign name="filter" size={24} color="white" />
+                        <AntDesign name="filter" size={20} color="white" />
                     </Pressable>
                 </View>
                 <Picker
                     selectedValue={genderFilter}
                     onValueChange={(itemValue) => setGenderFilter(itemValue)}
-                    style={[
-                        styles.picker,
-                        { color: darkMode ? "white" : "black" },
-                    ]}
+                    style={[styles.picker]}
                 >
-                    <Picker.Item
-                        label="Todos"
-                        value={"all"}
-                        color={darkMode ? "white" : "black"}
-                    />
-                    <Picker.Item
-                        label="Masculino"
-                        value="male"
-                        color={darkMode ? "white" : "black"}
-                    />
-                    <Picker.Item
-                        label="Feminino"
-                        value="female"
-                        color={darkMode ? "white" : "black"}
-                    />
+                    <Picker.Item label="Todos" value={"all"} />
+                    <Picker.Item label="Masculino" value="male" />
+                    <Picker.Item label="Feminino" value="female" />
                 </Picker>
             </View>
 
@@ -242,6 +227,9 @@ const HomeScreen = () => {
                 onScroll={handleScroll}
                 scrollEventThrottle={16}
             />
+            <View style={[styles.footer]}>
+                <AntDesign name="user" size={24} color={"#4169E1"}></AntDesign>
+            </View>
             {showScrollToTopButton && (
                 <Pressable
                     style={styles.scrollToTopButton}
@@ -329,7 +317,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     filterIconContainer: {
-        marginRight: 10,
+        paddingTop: 10,
         padding: 5,
         borderRadius: 10,
         backgroundColor: "#007bff",
@@ -340,13 +328,15 @@ const styles = StyleSheet.create({
     },
     flatListContent: {
         flexGrow: 1,
+        paddingBottom: 5,
+        height: 300,
     },
     footer: {
         alignItems: "center",
         justifyContent: "center",
         marginVertical: 3,
         backgroundColor: "#ffffff",
-        height: 30,
+        height: 15,
     },
     loadMoreContainer: {
         flexDirection: "row",
