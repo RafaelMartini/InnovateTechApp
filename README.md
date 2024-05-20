@@ -48,6 +48,14 @@
 
 O InnovateTechApp é uma aplicação móvel desenvolvida para a InnovateTech que simplifica a gestão e visualização de informações de estudantes de maneira eficiente e interativa, utilizando dados da API RandomUser
 
+<div align="center" id="top"> 
+  <img src="./assets/appCaptura.png" alt="Innovatetechapp" />
+  <img src="./assets/appCaptura2.png" alt="Innovatetechapp" />
+  <img src="./assets/darkMode.png" alt="Innovatetechapp" />
+  <img src="./assets/darkModeGender.png" alt="Innovatetechapp" />
+  <img src="./assets/CarregarMais.png" alt="Innovatetechapp" />
+</div>
+
 ## :sparkles: Features
 
 :heavy_check_mark: **Feature 1: Tela de Carregamento Inicial**  
@@ -71,6 +79,15 @@ Após o primeiro carregamento dos dados, armazenar as informações no cache int
 :heavy_check_mark: **Feature 7: Gerenciamento de Estado**  
 Uso do Redux para manejar o estado global da aplicação.
 
+:heavy_check_mark: **Feature 8: Botão de subir a lista**  
+Criei um botão para subir o FlatList sem precisar dr scrool para cima, com 1 click o usuário chega ao topo da lista.
+
+:heavy_check_mark: **Feature 9: Thema Dark e Ligth**  
+Para melhorar a experiência do usuário e melhorar a visibilidade em ambientes escuros, criei um botão superior lateral para mudar para thema claro e escuro.
+
+:heavy_check_mark: **Feature 10: Tradução de inglês para português**  
+Traduzi o tudo o que vinha de inglês do endpoint para português dinamicamente.
+
 ## :rocket: Technologies
 
 The following tools were used in this project:
@@ -88,19 +105,21 @@ Before starting :checkered_flag:, you need to have [Git](https://git-scm.com) an
 ## :checkered_flag: Starting
 
 ```bash
-# Clone this project
+# Clone o projeto
 $ git clone https://github.com/RafaelMartini/innovatetechapp
 
-# Access
+# Acesse a pasta innovatetechapp
 $ cd innovatetechapp
 
-# Install dependencies
+# Instale as dependências
 $ yarn install
 
-# Run the project
+# Rode o projeto
 $ npx expo start
 
-# The server will initialize in the <http://localhost:8081>
+# Use a porta <http://localhost:8081> para acessar via webpage no navegador
+
+# Ou use o app oficial Expo Go, que você consegue instalar na Apple Store ou Play Store, após baixar o app, scaneie o Qr Code, estando na mesma rede wi-fi ele irá iniciar o projeto, não se esqueça do comando para rodar npx expo start
 ```
 
 ## :memo: License
